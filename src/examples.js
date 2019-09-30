@@ -10,147 +10,116 @@ import SequencerRandomNode from './nodes/SequencerRandomNode';
 
 import BehaviourTreeInstance from './index';
 
-function writeOnConsole (text) {
-	var node = document.createElement("LI");                // Create a <li> node
-	var textnode = document.createTextNode(text);         	// Create a text node
-	node.appendChild(textnode);                             // Append the text to <li>
-	document.getElementById("console").appendChild(node);   // Append <li> to <ul> with id="myList"
-	//	console.debug(text)
-}
-
+// E' l'unica variabvile che rappresenta il world TODO: mettre un oggetto da passare dentro ogni 
 var totalKidsWondering = 20;
 
 export default function example () {
 	/**
 	 *  PolicemanManager is like a static instance that processes actions on a given actor
-	 *  through a behaviour tree instance.
+	 *  through a behaviour tree instance. Sotto sono tutte funzioni 
 	 */
 	var PolicemanManager = {};
 
-	PolicemanManager.ifKidInSight = function (behaviourTreeInstanceState) {
+	PolicemanManager.ifKidInSight = function (BTInstance) {
 
-		behaviourTreeInstanceState.setState(BehaviourTreeInstance.STATE_COMPLETED);
+		BTInstance.setState(BehaviourTreeInstance.COMPLETED);
 
 		if (totalKidsWondering > 0) {
-			writeOnConsole("total kids wandering: " + totalKidsWondering);
+			console.log("total kids wandering: " + totalKidsWondering);
 			var b = Math.random() > 0;
-			writeOnConsole(behaviourTreeInstanceState.actor.name + ": " + "see kid? " + (b ? "yes" : "no"));
+			console.log(BTInstance.actor.name + ": " + "see kid? " + (b ? "yes" : "no"));
 			return b;
 		} else {
-			writeOnConsole(behaviourTreeInstanceState.actor.name + ": " + "No more kids");
+			console.log(BTInstance.actor.name + ": " + "No more kids");
 			return false;
 		}
 	};
 
-	PolicemanManager.ifChaseGotKid = function (behaviourTreeInstanceState) {
+	PolicemanManager.ifChaseGotKid = function (BTInstance) {
+		console.log("ifChaseGotKid 1 ->" + new Date());
+		console.log("ifChaseGotKid state: " + BTInstance.findStateForNode(BTInstance.currentNode));
 
-		writeOnConsole("ifChaseGotKid 1 ->" + new Date());
+		if (BTInstance.hasToStart()) {
+			console.log("ifChaseGotKid 2 ->" + new Date());
+			console.log("running after kid");
 
-		writeOnConsole("ifChaseGotKid state: " + behaviourTreeInstanceState.findStateForNode(behaviourTreeInstanceState.currentNode));
-
-		if (behaviourTreeInstanceState.hasToStart()) {
-
-			writeOnConsole("ifChaseGotKid 2 ->" + new Date());
-
-			writeOnConsole("running after kid");
-
-			behaviourTreeInstanceState.waitUntil(function () {
+			BTInstance.waitUntil(function () {
 				setTimeout(function () {
-					writeOnConsole("ifChaseGotKid 2.5 ->" + new Date());
-					behaviourTreeInstanceState.completedAsync();
+					console.log("ifChaseGotKid 2.5 ->" + new Date());
+					BTInstance.completedAsync();
 				}, 3000);
 			});
 
-		} else if (behaviourTreeInstanceState.hasToComplete()) {
-
-			writeOnConsole("ifChaseGotKid 3 ->" + new Date());
-
+		} else if (BTInstance.hasToComplete()) {
+			console.log("ifChaseGotKid 3 ->" + new Date());
 			var b = Math.random() > 0.5;
-			writeOnConsole(behaviourTreeInstanceState.actor.name + ": " + " got child: " + b);
+			console.log(BTInstance.actor.name + ": " + " got child: " + b);
 			return b;
 
 		} else {
-
-			writeOnConsole("ifChaseGotKid 4 ->" + new Date());
-
-			writeOnConsole("running after kid doing nothing");
+			console.log("ifChaseGotKid 4 ->" + new Date());
+			console.log("running after kid doing nothing");
 		}
 
-		writeOnConsole("ifChaseGotKid 5 ->" + new Date());
+		console.log("ifChaseGotKid 5 ->" + new Date());
 
 	};
 
-	PolicemanManager.ifChaseGotKidCases = function (behaviourTreeInstanceState) {
-
-		if (behaviourTreeInstanceState.hasToStart()) {
-
-			writeOnConsole("running after kid");
-
-			console.debug("ifChaseGotKid currentNode ", behaviourTreeInstanceState.currentNode);
-
-			behaviourTreeInstanceState.waitUntil(function () {
+	PolicemanManager.ifChaseGotKidCases = function (BTInstance) {
+		if (BTInstance.hasToStart()) {
+			console.log("running after kid");
+			console.debug("ifChaseGotKid currentNode ", BTInstance.currentNode);
+			BTInstance.waitUntil(function () {
 				setTimeout(function () {
-					behaviourTreeInstanceState.completedAsync();
+					BTInstance.completedAsync();
 				}, 3000);
 			});
-
-		} else if (behaviourTreeInstanceState.hasToComplete()) {
-
+		} else if (BTInstance.hasToComplete()) {
 			var random = Math.random();
 			var b = random > 0.6 ? 2 : (random > 0.3 ? 1 : 0);
-			writeOnConsole(behaviourTreeInstanceState.actor.name + ": " + " got child: " + b);
+			console.log(BTInstance.actor.name + ": " + " got child: " + b);
 			return b;
-
 		} else {
-			writeOnConsole("running after kid doing nothing");
+			console.log("running after kid doing nothing");
 		}
-
 	};
 
-	PolicemanManager.actionBringChildToStation = function (behaviourTreeInstanceState) {
-
-		if (behaviourTreeInstanceState.hasToStart()) {
-
-			writeOnConsole(behaviourTreeInstanceState.actor.name + ": " + "Bring child to station");
-
-			behaviourTreeInstanceState.waitUntil(function () {
+	PolicemanManager.actionBringChildToStation = function (BTInstance) {
+		if (BTInstance.hasToStart()) {
+			console.log(BTInstance.actor.name + ": " + "Bring child to station");
+			BTInstance.waitUntil(function () {
 				setTimeout(function () {
-					writeOnConsole(behaviourTreeInstanceState.actor.name + ": " + " child in station");
-					behaviourTreeInstanceState.completedAsync();
+					console.log(BTInstance.actor.name + ": " + " child in station");
+					BTInstance.completedAsync();
 				}, 3000);
 			});
-
 			totalKidsWondering--;
 		}
-
 	};
 
-	PolicemanManager.actionBringChildHome = function (behaviourTreeInstanceState) {
+	PolicemanManager.actionBringChildHome = function (BTInstance) {
 		totalKidsWondering--;
-		writeOnConsole(behaviourTreeInstanceState.actor.name + ": " + "Bring child home");
+		console.log(BTInstance.actor.name + ": " + "Bring child home");
 	};
 
-	PolicemanManager.actionSmoke = function (behaviourTreeInstanceState) {
-		writeOnConsole(behaviourTreeInstanceState.actor.name + ": " + "Smoke");
+	PolicemanManager.actionSmoke = function (BTInstance) {
+		console.log(BTInstance.actor.name + ": " + "Smoke");
 	};
 
-	PolicemanManager.actionImHurt = function (behaviourTreeInstanceState) {
-		writeOnConsole(behaviourTreeInstanceState.actor.name + ": " + "  I'm hurt!");
+	PolicemanManager.actionImHurt = function (BTInstance) {
+		console.log(BTInstance.actor.name + ": " + "  I'm hurt!");
 	};
 
 
-	PolicemanManager.actionWanderAround = function (behaviourTreeInstanceState) {
-		writeOnConsole(behaviourTreeInstanceState.actor.name + ": " + "Wander around");
+	PolicemanManager.actionWanderAround = function (BTInstance) {
+		console.log(BTInstance.actor.name + ": " + "Wander around");
 	};
 
-	// Behaviour Tree Instance BEGIN
-	/**
-	 * Here are several examples of behaviour tree definitions. You can create your own.
-	 */
+	// examples of behaviour tree definitions
 
 	var patrollingPoliceBehaviourTreeTwoResults =
 		(new SelectorNode(
-			PolicemanManager.ifKidInSight,
+			PolicemanManager.ifKidInSight,	// ritorna true o false...
 			new SelectorNode(
 				PolicemanManager.ifChaseGotKid,
 				new ActionNode(PolicemanManager.actionBringChildToStation),
@@ -224,23 +193,22 @@ export default function example () {
 
 	var bti1 = new BehaviourTreeInstance(patrollingPoliceBehaviourTreeMultiResults, policeman1, 1);
 	
-	loop(bti1);
+	gameLoop(bti1);
 
 	//you can have several instances of course
 	/* var policeman2 = {};
 	 policeman2.name = "Jimmy";
 	 var bti2 = new BehaviourTreeInstance(patrollingPoliceBehaviourTreeTwoResults,policeman2,1);
-	 loop(bti2); */
-
+	 gameLoop(bti2); */
 }
 
 
-function loop (behaviourTreeInstance) {
+function gameLoop (behaviourTreeInstance) {
 	var tick = setInterval(function () {
 		behaviourTreeInstance.executeBehaviourTree();
 
 		if (behaviourTreeInstance.finished) {
-			writeOnConsole(behaviourTreeInstance.actor.name + " has finished.");
+			console.log(behaviourTreeInstance.actor.name + " has finished.");
 			clearTimeout(tick);
 		}
 	}, 100);

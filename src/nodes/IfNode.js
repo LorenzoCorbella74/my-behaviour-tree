@@ -4,21 +4,22 @@
  * You may also omit it and pass directly the method, will work anyway.
  */
 export default class IfNode {
+
     constructor(action) {
         this.action = action;
     }
 
-    execute (behaviourTreeInstanceState) {
-        return this.action(behaviourTreeInstanceState);
+    execute (BTInstance) {
+        return this.action(BTInstance);
     }
 
-    // non ha figli
+    // no children
     children () {
         return null;
     }
 
-    // è condizionale
+    // TRUE!
     isConditional () {
         return true;
-    };
+    }
 }

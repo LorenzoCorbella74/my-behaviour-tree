@@ -2,8 +2,8 @@ import c from './constants';
 import IfNode from './IfNode';
 
 /**
- *  selector that takes a condition function returning the index of the action to be executed.
- * This allows to compact a set of nested conditions in a more readable one.
+ *  Selector that takes a condition function returning the index of the action to be executed.
+ *  This allows to compact a set of nested conditions in a more readable one.
  */
 export default class SelectorArrayNode {
 
@@ -12,25 +12,26 @@ export default class SelectorArrayNode {
         this.actionArray = actionArray;
     }
 
-    execute (behaviourTreeInstanceState) {
-        var state = behaviourTreeInstanceState.findStateForNode(this);
-        if (state == c.STATE_EXECUTING)
+    execute (BTInstance) {
+        let state = BTInstance.findStateForNode(this);
+        if (state == c.RUNNING) {
             return;
-        //			In both cases Sync and Async
-        var resultInt;
+        }
+        // In both cases Sync and Async
+        let resultInt;
         if (this.conditionFunction instanceof IfNode) {
-            resultInt = this.conditionFunction.execute(behaviourTreeInstanceState);
+            resultInt = this.conditionFunction.execute(BTInstance);
+        } else {
+            resultInt = this.conditionFunction(BTInstance);
         }
-        else {
-            resultInt = this.conditionFunction(behaviourTreeInstanceState);
-        }
-        if (state == c.STATE_EXECUTING)
+        if (state == c.RUNNING) {
             return;
-        for (var j = 0; j < this.actionArray.length; j++) {
+        }
+        for (let j = 0; j < this.actionArray.length; j++) {
             if (j == resultInt)
-                behaviourTreeInstanceState.setState(c.STATE_TO_BE_STARTED, this.actionArray[j]);
+                BTInstance.setState(c.TO_BE_STARTED, this.actionArray[j]);
             else
-                behaviourTreeInstanceState.setState(c.STATE_DISCARDED, this.actionArray[j]);
+                BTInstance.setState(c.DISCARDED, this.actionArray[j]);
         }
     }
 
@@ -40,5 +41,5 @@ export default class SelectorArrayNode {
 
     isConditional () {
         return true;
-    };
+    }
 }

@@ -20,17 +20,17 @@ export default class SelectorRandomProbabilityNode {
         this.weightsActionMap = probabilityActionMap;
     }
 
-    execute (behaviourTreeInstanceState) {
-        var state = behaviourTreeInstanceState.findStateForNode(this);
-        if (state == c.STATE_EXECUTING)
+    execute (BTInstance) {
+        var state = BTInstance.findStateForNode(this);
+        if (state == c.RUNNING)
             return;
         var action = chooseByProbability(this.weightsActionMap);
-        behaviourTreeInstanceState.setState(c.STATE_WAITING, this);
+        BTInstance.setState(c.WAITING, this);
         for (var j = 0; j < this.weightsActionMap.length; j++) {
             if (this.weightsActionMap[j][1] == action)
-                behaviourTreeInstanceState.setState(c.STATE_TO_BE_STARTED, action);
+                BTInstance.setState(c.TO_BE_STARTED, action);
             else
-                behaviourTreeInstanceState.setState(c.STATE_DISCARDED, this.weightsActionMap[j][1]);
+                BTInstance.setState(c.DISCARDED, this.weightsActionMap[j][1]);
         }
     }
 

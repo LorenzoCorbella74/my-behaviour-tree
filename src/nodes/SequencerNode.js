@@ -9,13 +9,13 @@ export default class SequencerNode {
         this.actionArray = actionArray;
     }
 
-    execute (behaviourTreeInstanceState) {
-        behaviourTreeInstanceState.setState(c.STATE_WAITING);
-        behaviourTreeInstanceState.setState(c.STATE_TO_BE_STARTED, actionArray[0]);
+    execute (BTInstance) {
+        BTInstance.setState(c.WAITING);
+        BTInstance.setState(c.TO_BE_STARTED, this.actionArray[0]);
     }
 
     children () {
-        return actionArray;
+        return this.actionArray;
     }
 
     isConditional () {

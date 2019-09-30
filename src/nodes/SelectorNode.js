@@ -1,4 +1,5 @@
 import c from './constants';
+import IfNode from './IfNode';
 
 /**
  * This models the "selector" behaviour on two alternative conditions
@@ -12,33 +13,26 @@ export default class SelectorNode {
         this.actionIfFalse = actionIfFalse;
     }
 
-    /**
-     * This makes a given SelectorNode instance execute.
-     * This function is used by the engine executeBehaviourTree
-     * when a node of type SelectorNode is met
-     */
-    execute (behaviourTreeInstanceState) {
-        var state = behaviourTreeInstanceState.findStateForNode(this);
-        if (state == c.STATE_EXECUTING)
+    execute (BTInstance) {
+        var state = BTInstance.findStateForNode(this);
+        if (state == c.RUNNING)
             return;
         // In both cases Sync and Async
         var result;
         if (this.conditionFunction instanceof IfNode) {
-            result = this.conditionFunction.execute(behaviourTreeInstanceState);
+            result = this.conditionFunction.execute(BTInstance);
         }
         else {
-            result = this.conditionFunction(behaviourTreeInstanceState);
+            result = this.conditionFunction(BTInstance);
         }
         //		console.debug("SelectorNode result", result);
-        if (state == c.STATE_EXECUTING)
-            return;
+        if (state == c.RUNNING) return;
         if (result) {
-            behaviourTreeInstanceState.setState(c.STATE_TO_BE_STARTED, this.actionIfTrue);
-            behaviourTreeInstanceState.setState(c.STATE_DISCARDED, this.actionIfFalse);
-        }
-        else {
-            behaviourTreeInstanceState.setState(c.STATE_TO_BE_STARTED, this.actionIfFalse);
-            behaviourTreeInstanceState.setState(c.STATE_DISCARDED, this.actionIfTrue);
+            BTInstance.setState(c.TO_BE_STARTED, this.actionIfTrue);
+            BTInstance.setState(c.DISCARDED, this.actionIfFalse);
+        }else {
+            BTInstance.setState(c.TO_BE_STARTED, this.actionIfFalse);
+            BTInstance.setState(c.DISCARDED, this.actionIfTrue);
         }
     }
 

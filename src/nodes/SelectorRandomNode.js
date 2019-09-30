@@ -1,8 +1,6 @@
 import c from './constants';
 
-/**
- *  Selector that executes randomly one of the actions in the array.
- */
+/*  Selector that executes randomly one of the actions in the array.    */
 
 export default class SelectorRandomNode {
 
@@ -10,22 +8,23 @@ export default class SelectorRandomNode {
         this.actionArray = actionArray;
     }
 
-    execute (behaviourTreeInstanceState) {
-        var state = behaviourTreeInstanceState.findStateForNode(this);
-        if (state == c.STATE_EXECUTING)
+    execute (BTInstance) {
+        var state = BTInstance.findStateForNode(this);
+        if (state == c.RUNNING)
             return;
-        var randomIndex = Math.floor(Math.random() * actionArray.length);
-        behaviourTreeInstanceState.setState(c.STATE_WAITING, this);
-        for (var j = 0; j < actionArray.length; j++) {
-            if (j == randomIndex)
-                behaviourTreeInstanceState.setState(c.STATE_TO_BE_STARTED, actionArray[j]);
-            else
-                behaviourTreeInstanceState.setState(c.STATE_DISCARDED, actionArray[j]);
+        var randomIndex = Math.floor(Math.random() * this.actionArray.length);
+        BTInstance.setState(c.WAITING, this);
+        for (var j = 0; j < this.actionArray.length; j++) {
+            if (j == randomIndex) {
+                BTInstance.setState(c.TO_BE_STARTED, this.actionArray[j]);
+            } else {
+                BTInstance.setState(c.DISCARDED, this.actionArray[j]);
+            }
         }
     }
 
     children () {
-        return actionArray;
+        return this.actionArray;
     }
 
     isConditional () {
