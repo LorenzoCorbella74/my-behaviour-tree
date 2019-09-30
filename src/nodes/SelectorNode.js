@@ -21,16 +21,15 @@ export default class SelectorNode {
         var result;
         if (this.conditionFunction instanceof IfNode) {
             result = this.conditionFunction.execute(BTInstance);
-        }
-        else {
+        } else {
             result = this.conditionFunction(BTInstance);
         }
-        //		console.debug("SelectorNode result", result);
+        //	console.debug("SelectorNode result", result);
         if (state == c.RUNNING) return;
         if (result) {
             BTInstance.setState(c.TO_BE_STARTED, this.actionIfTrue);
             BTInstance.setState(c.DISCARDED, this.actionIfFalse);
-        }else {
+        } else {
             BTInstance.setState(c.TO_BE_STARTED, this.actionIfFalse);
             BTInstance.setState(c.DISCARDED, this.actionIfTrue);
         }
